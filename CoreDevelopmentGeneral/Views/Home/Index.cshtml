@@ -1,0 +1,67 @@
+﻿@model IEnumerable<CoreDevelopmentApp.Models.Models.RequestModel>
+
+@using X.PagedList.Mvc.Core; @*//import this so we get our HTML Helper*@
+@using X.PagedList; @*//import this so we can cast our list to IPagedList (only necessary because ViewBag is dynamic)*@
+
+<!-- import the included stylesheet for some (very basic) default styling -->
+<link href="/Content/PagedList.css" rel="stylesheet" type="text/css" />
+
+@{
+    ViewData["Title"] = "All Requests";
+
+    IEnumerable<CoreDevelopmentApp.Models.Models.ApplicationListModel> selecList;
+    if (TempData["selectListdata"] != null)
+    {
+        selecList = TempData["selectListdata"] as IEnumerable<CoreDevelopmentApp.Models.Models.ApplicationListModel>;
+    }
+    else
+    {
+        selecList = null;
+    }
+}
+
+<div class="row mt-2">
+    <!-- column -->
+    <div class="col-lg-12">
+        <div class="card">
+            <div class="card-block">
+                <h4 class="card-title">All Requests</h4>
+
+                <div class="table-responsive">
+                    <table class="table">
+                        <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th>Name</th>
+                                <th>Category</th>
+                                <th>Dead Line</th>
+                                <th>Description</th>
+                                <th>Email</th>
+                                <th></th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var item in ViewBag.OnePageOfProducts)
+                            {
+                                <tr>
+                                    <td>@item.Id</td>
+                                    <td>@item.Name</td>
+                                    <td>@selecList.Single(x => x.Id == item.ListItemId).Name </td>
+                                    <td>@item.DeadLine.ToString("dd.MM.yyyy")</td>
+                                    <td>@item.Description</td>
+                                    <td>@item.Email</td>
+                                    <td style="display: flex; flex-direction: row; justify-content: center;">
+                                        <a asp-action="Edit" asp-controller="Home" asp-route-Id="@item.Id"><img src="~/assets/images/edit.png" height="50" width="50" /></a>
+                                        <a asp-action="Delete" asp-controller="Home" asp-route-Id="@item.Id"><img src="~/assets/images/delete.png" height="50" width="50" /></a>
+                                    </td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+                <!-- output a paging control that lets the user navigation to the previous page, next page, etc -->
+                @Html.PagedListPager((IPagedList)ViewBag.OnePageOfProducts, page => Url.Action("Index", new { page }))
+            </div>
+        </div>
+    </div>
+</div>
